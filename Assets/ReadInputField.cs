@@ -41,7 +41,7 @@ public class ReadInputField : MonoBehaviour
 
     public string SearchQuery;
 
-    public GameObject SettingsPanel;
+    public GameObject SearchEnginePanel;
 
     public string SearchEngine;
     public string SearchEngineURL;
@@ -50,12 +50,16 @@ public class ReadInputField : MonoBehaviour
 
     public Text SearchEngineText;
 
-    public Image SettingPanelLogo;
+    public Image SearchEnginePanelLogo;
 
-    public Sprite OpenSettingsSprite;
-    public Sprite CloseSettingsSprite;
+    public Sprite OpenSearchEngineSprite;
+    public Sprite CloseSearchEngineSprite;
 
-    public GameObject CloseSettingsPanelButton;
+    public GameObject CloseSearchEnginePanelButton;
+
+    public GameObject SettingsPanel;
+    public GameObject AreYouSureToQuitPanel;
+    public GameObject AreYouSureToDestroyTheRegistrationOfTheStringPanel;
 
     public List<string> IgnoredStrings = new List<string>() { "<i>", "</i>", "<b>", "</b>", "<size>", "</size", "<color>", "/<color>", "<material>", "</material>", "<quad>, </quad>" };
     public List<string> IgnoredWords = new List<string>() 
@@ -86,18 +90,46 @@ public class ReadInputField : MonoBehaviour
         CharactersLimitInputField.interactable = false;
         SearchEngine = "Google";
         SearchEngineURL = "https://www.google.com/search?q=";
+        if (PlayerPrefs.HasKey("TextInInputField") == false)
+        {
+            PlayerPrefs.SetString("TextInInputField", "");
+        }
+        else
+        {
+            inputField.text = PlayerPrefs.GetString("TextInInputField");
+            GetTextStatistics(inputField.text);
+        }
     }
 
     void Update()
     {
-        CloseSettingsPanelButton.SetActive(SettingsPanel.activeSelf);
         if (SettingsPanel.activeSelf == true)
         {
-            SettingPanelLogo.sprite = CloseSettingsSprite;
+            SearchEnginePanel.SetActive(false);
+        }
+        #if UNITY_WEBGL
+            
+        #else
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SettingsPanel.SetActive(!SettingsPanel.activeSelf);
+            SearchEnginePanel.SetActive(false);
+            AreYouSureToQuitPanel.SetActive(false);
+            AreYouSureToDestroyTheRegistrationOfTheStringPanel.SetActive(false);
+        }
+        #endif
+        if (SettingsPanel.activeSelf == true)
+        {
+            CloseSearchEnginePanelButton.SetActive(true);
+        }
+        CloseSearchEnginePanelButton.SetActive(SearchEnginePanel.activeSelf);
+        if (SearchEnginePanel.activeSelf == true)
+        {
+            SearchEnginePanelLogo.sprite = CloseSearchEngineSprite;
         }
         else
         {
-            SettingPanelLogo.sprite = OpenSettingsSprite;
+            SearchEnginePanelLogo.sprite = OpenSearchEngineSprite;
         }
         SearchEngineText.text = SearchEngine.ToString();
         if (Input.GetKeyDown(KeyCode.Delete))
@@ -374,19 +406,77 @@ public class ReadInputField : MonoBehaviour
         SearchEngine = "Akasha";
         CloseSearchEnginePanel();
     }
-    public void ChangeStateOfSettingsPanel()
+    public void ChangeStateOfSearchEnginePanel()
     {
-        if (SettingsPanel.activeSelf == true)
+        if (SearchEnginePanel.activeSelf == true)
         {
             CloseSearchEnginePanel();
         }
         else
         {
-            SettingsPanel.SetActive(true);
+            SearchEnginePanel.SetActive(true);
         }
     }
     public void CloseSearchEnginePanel()
     {
+        SearchEnginePanel.SetActive(false);
         SettingsPanel.SetActive(false);
+        AreYouSureToQuitPanel.SetActive(false);
+        AreYouSureToDestroyTheRegistrationOfTheStringPanel.SetActive(false);
+    }
+
+    public void SaveTheCurrentText()
+    {
+        PlayerPrefs.SetString("TextInInputField", inputField.text);
+    }
+    public void BackToThePreviousVersionOfTheText()
+    {
+        inputField.text = PlayerPrefs.GetString("TextInInputField");
+    }
+    public void QuitAndSave()
+    {
+        PlayerPrefs.SetString("TextInInputField", inputField.text);
+        Application.Quit();
+    }
+    public void QuitWithoutSaving()
+    {
+        if (PlayerPrefs.GetString("TextInInputField") == inputField.text)
+        {
+            Application.Quit();
+        }
+        else
+        {
+            AreYouSureToQuitPanel.SetActive(true);
+            SettingsPanel.SetActive(false);
+        }
+    }
+    public void DeleteSavedText()
+    {
+        if (PlayerPrefs.GetString("TextInInputField") != "")
+        {
+            AreYouSureToDestroyTheRegistrationOfTheStringPanel.SetActive(true);
+            SettingsPanel.SetActive(false);
+            AreYouSureToQuitPanel.SetActive(false);
+        }
+    }
+    public void IsSureToQuit()
+    {
+        Application.Quit();
+    }
+    public void IsNotSureToQuit()
+    {
+        AreYouSureToQuitPanel.SetActive(false);
+        SettingsPanel.SetActive(true);
+    }
+    public void IsSureToDestroyTheString()
+    {
+        PlayerPrefs.DeleteKey("TextInInputField");
+        AreYouSureToDestroyTheRegistrationOfTheStringPanel.SetActive(false);
+        SettingsPanel.SetActive(true);
+    }
+    public void IsNotSureToDestroyTheString()
+    {
+        AreYouSureToDestroyTheRegistrationOfTheStringPanel.SetActive(false);
+        SettingsPanel.SetActive(true);
     }
 }
