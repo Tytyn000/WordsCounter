@@ -41,9 +41,6 @@ public class ReadInputField : MonoBehaviour
 
     public string SearchQuery;
 
-    public GameObject SearchOnWebButton;
-    public GameObject CopySelectedTextButton;
-
     public GameObject SettingsPanel;
 
     public string SearchEngine;
@@ -53,6 +50,12 @@ public class ReadInputField : MonoBehaviour
 
     public Text SearchEngineText;
 
+    public Image SettingPanelLogo;
+
+    public Sprite OpenSettingsSprite;
+    public Sprite CloseSettingsSprite;
+
+    public GameObject CloseSettingsPanelButton;
 
     public List<string> IgnoredStrings = new List<string>() { "<i>", "</i>", "<b>", "</b>", "<size>", "</size", "<color>", "/<color>", "<material>", "</material>", "<quad>, </quad>" };
     public List<string> IgnoredWords = new List<string>() 
@@ -87,13 +90,14 @@ public class ReadInputField : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftAlt) && SearchOnWebButton.activeSelf == true)
+        CloseSettingsPanelButton.SetActive(SettingsPanel.activeSelf);
+        if (SettingsPanel.activeSelf == true)
         {
-            SettingsPanel.SetActive(true);
+            SettingPanelLogo.sprite = CloseSettingsSprite;
         }
         else
         {
-            SettingsPanel.SetActive(false);
+            SettingPanelLogo.sprite = OpenSettingsSprite;
         }
         SearchEngineText.text = SearchEngine.ToString();
         if (Input.GetKeyDown(KeyCode.Delete))
@@ -112,16 +116,6 @@ public class ReadInputField : MonoBehaviour
         else
         {
             SearchQuery = "";
-        }
-        if (SearchQuery == "" || SearchQuery == null)
-        {
-            SearchOnWebButton.SetActive(false);
-            CopySelectedTextButton.SetActive(false);
-        }
-        else
-        {
-            SearchOnWebButton.SetActive(true);
-            CopySelectedTextButton.SetActive(true);
         }
     }
 
@@ -209,7 +203,7 @@ public class ReadInputField : MonoBehaviour
 
         if (AreWordsLimited)
         {
-            if (!ExcessWordsPanel.activeSelf)
+            if (ExcessWordsPanel.activeSelf == false)
             {
                 ExcessWordsPanel.SetActive(true);
             }
@@ -308,54 +302,62 @@ public class ReadInputField : MonoBehaviour
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://www.google.com/search?q=";
         SearchEngine = "Google";
+        CloseSearchEnginePanel();
     }
     public void ClickOnBingSearchEngine()
     {
-        IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://www.bing.com/search?q=";
         SearchEngine = "Bing";
+        CloseSearchEnginePanel();
     }
     public void ClickOnYahooSearchEngine()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://search.yahoo.com/search?p=";
         SearchEngine = "Yahoo !";
+        CloseSearchEnginePanel();
     }
     public void ClickOnYandexSearchEngine()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://yandex.com/search/?text=";
         SearchEngine = "Yandex";
+        CloseSearchEnginePanel();
     }
     public void ClickOnYoutube()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://www.youtube.com/results?search_query=";
         SearchEngine = "Youtube";
+        CloseSearchEnginePanel();
     }
     public void ClickOnTikTok()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://www.tiktok.com/search?q=";
         SearchEngine = "TikTok";
+        CloseSearchEnginePanel();
     }
     public void ClickOnSpotify()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://open.spotify.com/search/";
         SearchEngine = "Spotify";
+        CloseSearchEnginePanel();
     }
     public void ClickOnWikipedia()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://en.wikipedia.org/wiki/Special:Search?search=";
         SearchEngine = "Wikipédia";
+        CloseSearchEnginePanel();
     }
     public void ClickOnEnka()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://enka.network/u/";
         SearchEngine = "Enka";
+        CloseSearchEnginePanel();
     }
     public void ClickOnEnkaAndAkasha()
     {
@@ -363,11 +365,28 @@ public class ReadInputField : MonoBehaviour
         SearchEngineURL = "https://enka.network/u/";
         SecondSearchEngineURL = "https://akasha.cv/profile/";
         SearchEngine = "Enka & Akasha";
+        CloseSearchEnginePanel();
     }
     public void ClickOnAkasha()
     {
         IsThereASecondeSearchEngine = false;
         SearchEngineURL = "https://akasha.cv/profile/";
         SearchEngine = "Akasha";
+        CloseSearchEnginePanel();
+    }
+    public void ChangeStateOfSettingsPanel()
+    {
+        if (SettingsPanel.activeSelf == true)
+        {
+            CloseSearchEnginePanel();
+        }
+        else
+        {
+            SettingsPanel.SetActive(true);
+        }
+    }
+    public void CloseSearchEnginePanel()
+    {
+        SettingsPanel.SetActive(false);
     }
 }
